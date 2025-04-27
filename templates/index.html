@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DanceCorrect AI | Improve Your Dance Technique</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .countdown {
+            font-size: 4rem;
+            font-weight: bold;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            width: 6rem;
+            height: 6rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            border-left-color: #9333ea;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-purple-50 to-white">
+    <div class="container mx-auto py-8 px-4">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-purple-800">DanceCorrect AI</h1>
+            <p class="text-gray-600">Get professional feedback on your technical dance moves</p>
+        </header>
+
+        <!-- Dance Move Selection -->
+        <div id="move-selection" class="max-w-md mx-auto p-4">
+            <h2 class="text-xl font-semibold text-center mb-4">Select Your Dance Move</h2>
+            
+            <div class="relative mb-4">
+                <input
+                    type="text"
+                    id="search-input"
+                    placeholder="Search dance moves..."
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
+                >
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+            </div>
+            
+            <div id="move-buttons" class="grid grid-cols-2 gap-2 mb-4">
+                {% for move in dance_moves %}
+                <button
+                    class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn"
+                    data-move="{{ move }}"
+                >
+                    {{ move }}
+                </button>
+                {% endfor %}
+            </div>
+            
+            <button
+                id="custom-move-btn"
+                class="w-full py-2 text-sm text-purple-600 hover:text-purple-800"
+            >
+                + Add custom dance move
+            </button>
+            
+            <div id="custom-move-input" class="hidden flex flex-col space-y-3 mt-4">
+                <input
+                    type="text"
+                    id="custom-move"
+                    placeholder="Enter custom dance move..."
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
+                >
+                <div class="flex space-x-2">
+                    <button
+                        id="cancel-custom-btn"
+                        class="flex-1 py-2 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition duration-200"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        id="select-custom-btn"
+                        class="flex-1 py-2 px-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition duration-200"
+                    >
+                        Select
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recording Interface -->
+        <div id="recording" class="max-w-md mx-auto hidden">
+            <div class="mb-4 text-center">
+                <h2 class="text-xl font-semibold text-purple-800">
+                    Record your <span id="selected-move-display"></span>
+                </h2>
+                <p class="text-gray-600 text-sm">
+                    Position yourself so your full body is visible
+                </p>
+            </div>
+            
+            <div class="relative flex flex-col items-center">
+                <video id="camera-feed" width="360" height="640" autoplay muted class="rounded-lg shadow-lg"></video>
+                
+                <div id="countdown-display" class="absolute inset-0 flex items-center justify-center hidden">
+                    <div class="countdown">3</div>
+                </div>
+                
+                <div class="mt-4">
+                    <button
+                        id="start-recording"
+                        class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-full transition duration-200"
+                    >
+                        Record Dance Move
+                    </button>
+                    <button
+                        id="stop-recording"
+                        class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full transition duration-200 hidden"
+                    >
+                        Stop Recording
+                    </button>
+                </div>
+                
+                <button
+                    id="change-move-btn"
+                    class="mt-4 w-full py-2 text-purple-600 hover:text-purple-800"
+                >
+                    ← Change dance move
+                </button>
+            </div>
+        </div>
+
+        <!-- Analysis Screen -->
+        <div id="analyzing" class="flex flex-col items-center hidden">
+            <h2 class="text-xl font-semibold mb-4">Getting Your Feedback Ready</h2>
+            <p id="status-message" class="mb-4">Just a moment while we check your moves...</p>
+            <div class="relative">
+                <video id="analysis-video" width="360" height="640" muted class="rounded-lg shadow-lg opacity-60"></video>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback Display -->
+        <div id="feedback" class="max-w-3xl mx-auto p-4 hidden">
+            <h2 class="text-2xl font-bold text-purple-800 mb-6">Your Dance Feedback</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <video id="feedback-video" controls width="360" height="640" class="rounded-lg shadow-lg mb-4"></video>
+                    <button
+                        id="new-recording-btn"
+                        class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
+                    >
+                        Record New Dance
+                    </button>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-lg p-4 overflow-y-auto max-h-[70vh]">
+                    <h3 class="text-xl font-semibold text-purple-700 mb-4">Quick Tips</h3>
+                    <div id="feedback-content"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Display -->
+        <div id="error-display" class="max-w-md mx-auto p-4 bg-red-50 border border-red-100 rounded-lg text-center hidden">
+            <p id="error-message" class="text-red-600 mb-4"></p>
+            <button
+                id="try-again-btn"
+                class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
+            >
+                Try Again
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let mediaStream = null;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let selectedMove = '';
+        let countdownInterval = null;
+        let recordedVideoBlob = null;
+        
+        // DOM Elements
+        const moveSelectionSection = document.getElementById('move-selection');
+        const recordingSection = document.getElementById('recording');
+        const analyzingSection = document.getElementById('analyzing');
+        const feedbackSection = document.getElementById('feedback');
+        const errorSection = document.getElementById('error-display');
+        
+        const moveButtons = document.querySelectorAll('.move-btn');
+        const customMoveBtn = document.getElementById('custom-move-btn');
+        const customMoveInput = document.getElementById('custom-move-input');
+        const customMoveField = document.getElementById('custom-move');
+        const cancelCustomBtn = document.getElementById('cancel-custom-btn');
+        const selectCustomBtn = document.getElementById('select-custom-btn');
+        
+        const selectedMoveDisplay = document.getElementById('selected-move-display');
+        const changeMoveBtn = document.getElementById('change-move-btn');
+        
+        const cameraFeed = document.getElementById('camera-feed');
+        const startRecordingBtn = document.getElementById('start-recording');
+        const stopRecordingBtn = document.getElementById('stop-recording');
+        const countdownDisplay = document.getElementById('countdown-display');
+        
+        const analysisVideo = document.getElementById('analysis-video');
+        const statusMessage = document.getElementById('status-message');
+        
+        const feedbackVideo = document.getElementById('feedback-video');
+        const feedbackContent = document.getElementById('feedback-content');
+        const newRecordingBtn = document.getElementById('new-recording-btn');
+        
+        const errorMessage = document.getElementById('error-message');
+        const tryAgainBtn = document.getElementById('try-again-btn');
+        
+        const searchInput = document.getElementById('search-input');
+        const moveButtonsContainer = document.getElementById('move-buttons');
+        
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up event listeners for move selection
+            moveButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    selectMove(this.getAttribute('data-move'));
+                });
+            });
+            
+            // Custom move buttons
+            customMoveBtn.addEventListener('click', () => {
+                customMoveInput.classList.remove('hidden');
+                customMoveBtn.classList.add('hidden');
+            });
+            
+            cancelCustomBtn.addEventListener('click', () => {
+                customMoveInput.classList.add('hidden');
+                customMoveBtn.classList.remove('hidden');
+                customMoveField.value = '';
+            });
+            
+            selectCustomBtn.addEventListener('click', () => {
+                const customMove = customMoveField.value.trim();
+                if (customMove) {
+                    selectMove(customMove);
+                }
+            });
+            
+            // Search functionality
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                moveButtons.forEach(button => {
+                    const moveText = button.textContent.trim().toLowerCase();
+                    if (moveText.includes(searchTerm)) {
+                        button.style.display = 'block';
+                    } else {
+                        button.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Recording screen buttons
+            changeMoveBtn.addEventListener('click', showMoveSelection);
+            startRecordingBtn.addEventListener('click', startRecording);
+            stopRecordingBtn.addEventListener('click', stopRecording);
+            
+            // Feedback screen buttons
+            newRecordingBtn.addEventListener('click', showMoveSelection);
+            
+            // Error screen button
+            tryAgainBtn.addEventListener('click', showMoveSelection);
+        });
+        
+        // Functions
+        function selectMove(move) {
+            selectedMove = move;
+            selectedMoveDisplay.textContent = move;
+            showRecordingScreen();
+        }
+        
+        function showMoveSelection() {
+            // Stop any active stream
+            stopCameraStream();
+            
+            // Reset UI
+            moveSelectionSection.classList.remove('hidden');
+            recordingSection.classList.add('hidden');
+            analyzingSection.classList.add('hidden');
+            feedbackSection.classList.add('hidden');
+            errorSection.classList.add('hidden');
+            
+            // Reset custom move input
+            customMoveInput.classList.add('hidden');
+            customMoveBtn.classList.remove('hidden');
+            customMoveField.value = '';
+            
+            // Reset recording state
+            startRecordingBtn.classList.remove('hidden');
+            stopRecordingBtn.classList.add('hidden');
+        }
+        
+        function showRecordingScreen() {
+            moveSelectionSection.classList.add('hidden');
+            recordingSection.classList.remove('hidden');
+            
+            // Start camera
+            startCamera();
+        }
+        
+        async function startCamera() {
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({
+                    audio: false,
+                    video: {
+                        facingMode: 'user',
+                        width: { ideal: 640 },
+                        height: { ideal: 480 }
+                    }
+                });
+                
+                cameraFeed.srcObject = mediaStream;
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+                showError('Could not access camera. Please ensure you have given permission and try again.');
+            }
+        }
+        
+        function stopCameraStream() {
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+            }
+            
+            if (cameraFeed.srcObject) {
+                cameraFeed.srcObject = null;
+            }
+        }
+        
+        function startRecording() {
+            recordedChunks = [];
+            
+            // Start countdown
+            let countdown = 3;
+            countdownDisplay.querySelector('.countdown').textContent = countdown;
+            countdownDisplay.classList.remove('hidden');
+            
+            countdownInterval = setInterval(() => {
+                countdown--;
+                
+                if (countdown > 0) {
+                    countdownDisplay.querySelector('.countdown').textContent = countdown;
+                } else {
+                    clearInterval(countdownInterval);
+                    countdownDisplay.classList.add('hidden');
+                    
+                    // Start actual recording
+                    beginRecording();
+                }
+            }, 1000);
+        }
+        
+        function beginRecording() {
+            startRecordingBtn.classList.add('hidden');
+            stopRecordingBtn.classList.remove('hidden');
+            
+            try {
+                mediaRecorder = new MediaRecorder(mediaStream, { mimeType: 'video/webm' });
+                
+                mediaRecorder.addEventListener('dataavailable', event => {
+                    if (event.data.size > 0) {
+                        recordedChunks.push(event.data);
+                    }
+                });
+                
+                mediaRecorder.addEventListener('stop', () => {
+                    const videoBlob = new Blob(recordedChunks, { type: 'video/webm' });
+                    recordedVideoBlob = videoBlob;
+                    
+                    // Show analysis screen
+                    recordingSection.classList.add('hidden');
+                    analyzingSection.classList.remove('hidden');
+                    
+                    // Set up analysis video
+                    const videoURL = URL.createObjectURL(videoBlob);
+                    analysisVideo.src = videoURL;
+                    
+                    // Send to server for analysis
+                    analyzeVideo(videoBlob);
+                });
+                
+                mediaRecorder.start();
+                
+                // Auto-stop after 10 seconds
+                setTimeout(() => {
+                    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                        stopRecording();
+                    }
+                }, 10000);
+                
+            } catch (error) {
+                console.error('Error starting recording:', error);
+                showError('Failed to start recording. Please try again.');
+            }
+        }
+        
+        function stopRecording() {
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownDisplay.classList.add('hidden');
+            }
+            
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                startRecordingBtn.classList.remove('hidden');
+                stopRecordingBtn.classList.add('hidden');
+            }
+        }
+        
+        function analyzeVideo(videoBlob) {
+            const formData = new FormData();
+            formData.append('video', videoBlob);
+            formData.append('dance_move_type', selectedMove);
+            
+            statusMessage.textContent = 'Analyzing your dance move...';
+            
+            fetch('/analyze', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Server error: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                // Display feedback
+                showFeedback(data.analysis);
+            })
+            .catch(error => {
+                console.error('Error analyzing video:', error);
+                showError('Failed to analyze your dance. Please try again.');
+            });
+        }
+        
+        function showFeedback(analysis) {
+            // Hide analysis screen
+            analyzingSection.classList.add('hidden');
+            feedbackSection.classList.remove('hidden');
+            
+            // Set up feedback video
+            const videoURL = URL.createObjectURL(recordedVideoBlob);
+            feedbackVideo.src = videoURL;
+            
+            // Format and display feedback
+            const formattedFeedback = formatFeedback(analysis);
+            feedbackContent.innerHTML = formattedFeedback;
+        }
+        
+        function formatFeedback(analysis) {
+            // First try to identify numbered points with regex
+            const pointRegex = /(\d+\.\s*[^\n]+)/g;
+            const points = analysis.match(pointRegex);
+            
+            // If we found structured points, use them
+            if (points && points.length > 0) {
+                let html = '';
+                
+                // Check for any text before the first point (intro text)
+                const introText = analysis.split(points[0])[0].trim();
+                if (introText) {
+                    html += `
+                    <div class="mb-4 p-3 bg-purple-50 rounded-lg">
+                        <p class="text-purple-800 font-medium">${introText}</p>
+                    </div>`;
+                }
+                
+                // Add each point with appropriate styling
+                points.forEach((point, index) => {
+                    // Extract the number and the text
+                    const [_, number, text] = point.match(/(\d+)\.?\s*(.*)/);
+                    
+                    let iconClass = 'text-green-500';
+                    let bgClass = 'bg-green-50';
+                    let emoji = '👍';
+                    
+                    // Style differently based on point number
+                    if (number === '2') {
+                        iconClass = 'text-amber-500';
+                        bgClass = 'bg-amber-50';
+                        emoji = '🔍';
+                    } else if (number === '3') {
+                        iconClass = 'text-blue-500';
+                        bgClass = 'bg-blue-50';
+                        emoji = '💡';
+                    }
+                    
+                    html += `
+                    <div class="mb-4 p-3 ${bgClass} rounded-lg">
+                        <div class="flex items-start">
+                            <span class="mr-2 ${iconClass} text-xl">${emoji}</span>
+                            <div>
+                                <span class="font-semibold ${iconClass}">Point ${number}:</span>
+                                <p class="text-gray-800">${text.trim()}</p>
+                            </div>
+                        </div>
+                    </div>`;
+                });
+                
+                // Check for any text after the last point (conclusion)
+                const lastPoint = points[points.length - 1];
+                const conclusionText = analysis.split(lastPoint)[1]?.trim();
+                if (conclusionText) {
+                    html += `
+                    <div class="mt-6 p-3 bg-purple-100 rounded-lg">
+                        <p class="text-purple-800 font-medium">${conclusionText}</p>
+                    </div>`;
+                }
+                
+                return html;
+            }
+            
+            // Fallback: If no structured points found, just split by paragraphs
+            const paragraphs = analysis.split(/\n\s*\n/).filter(section => section.trim() !== '');
+            
+            let html = '';
+            paragraphs.forEach((paragraph, index) => {
+                html += `
+                <div class="mb-4 p-3 bg-gray-50 rounded-lg">
+                    <p class="text-gray-800">${paragraph.trim()}</p>
+                </div>`;
+            });
+            
+            return html;
+        }
+        
+        function showError(errorText) {
+            // Hide all other sections
+            moveSelectionSection.classList.add('hidden');
+            recordingSection.classList.add('hidden');
+            analyzingSection.classList.add('hidden');
+            feedbackSection.classList.add('hidden');
+            
+            // Show error
+            errorMessage.textContent = errorText;
+            errorSection.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html> 

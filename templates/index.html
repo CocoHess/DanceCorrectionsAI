@@ -38,13 +38,29 @@
 <body class="min-h-screen bg-gradient-to-b from-purple-50 to-white">
     <div class="container mx-auto py-8 px-4">
         <header class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-purple-800">DanceCorrect AI</h1>
-            <p class="text-gray-600">Get professional feedback on your technical dance moves</p>
+            <h1 class="text-3xl font-bold text-purple-800">Corrections.AI</h1>
+            <p class="text-gray-600">Get precise analysises on your technical dance moves</p>
         </header>
 
         <!-- Dance Move Selection -->
         <div id="move-selection" class="max-w-md mx-auto p-4">
             <h2 class="text-xl font-semibold text-center mb-4">Select Your Dance Move</h2>
+            
+            <div class="flex flex-col space-y-2 mb-4">
+                <button
+                    id="auto-detect-btn"
+                    class="w-full py-2 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition duration-200"
+                >
+                    Auto-Detect My Move
+                </button>
+                
+                <button
+                    id="custom-move-btn"
+                    class="w-full py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200"
+                >
+                    + Add Custom Dance Move
+                </button>
+            </div>
             
             <div class="relative mb-4">
                 <input
@@ -59,24 +75,150 @@
                     </svg>
                 </div>
             </div>
-            
-            <div id="move-buttons" class="grid grid-cols-2 gap-2 mb-4">
-                {% for move in dance_moves %}
+
+            <!-- Category Navigation -->
+            <div class="flex flex-wrap gap-2 mb-4">
                 <button
-                    class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn"
-                    data-move="{{ move }}"
+                    class="category-btn flex-1 py-2 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition duration-200"
+                    data-category="all"
                 >
-                    {{ move }}
+                    All Categories
                 </button>
-                {% endfor %}
+                <button
+                    class="category-btn flex-1 py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200"
+                    data-category="ballet"
+                >
+                    Ballet
+                </button>
+                <button
+                    class="category-btn flex-1 py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200"
+                    data-category="acro"
+                >
+                    Acro
+                </button>
+                <button
+                    class="category-btn flex-1 py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200"
+                    data-category="jazz"
+                >
+                    Jazz
+                </button>
+                <button
+                    class="category-btn flex-1 py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200"
+                    data-category="contemporary"
+                >
+                    Contemporary
+                </button>
+                <button
+                    class="category-btn flex-1 py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200"
+                    data-category="hiphop"
+                >
+                    Hip-Hop
+                </button>
             </div>
             
-            <button
-                id="custom-move-btn"
-                class="w-full py-2 text-sm text-purple-600 hover:text-purple-800"
-            >
-                + Add custom dance move
-            </button>
+            <!-- Dance Moves by Category -->
+            <div id="move-buttons" class="grid grid-cols-2 gap-2 mb-4">
+                <!-- Ballet Moves -->
+                <div class="category-section hidden" data-category="ballet">
+                    <h3 class="text-lg font-semibold text-purple-800 mb-2 col-span-2">Ballet Moves</h3>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Pirouette">Pirouette</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Fouetté">Fouetté</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Piqué Turn">Piqué Turn</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Arabesque">Arabesque</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Grand Jeté">Grand Jeté</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Attitude">Attitude</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Soutenu">Soutenu</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Développé">Développé</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Chassé">Chassé</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Sauté">Sauté</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Pas de Bourrée">Pas de Bourrée</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Échappé">Échappé</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Rond de Jambe">Rond de Jambe</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Grande Épaulment">Grande Épaulment</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Ciseaux">Ciseaux</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="À la seconde turn">À la seconde turn</button>
+                </div>
+
+                <!-- Acro Moves -->
+                <div class="category-section hidden" data-category="acro">
+                    <h3 class="text-lg font-semibold text-purple-800 mb-2 col-span-2">Acro Moves</h3>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Back Handspring">Back Handspring</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Front Handspring">Front Handspring</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Aerial">Aerial</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Back Tuck">Back Tuck</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Front Tuck">Front Tuck</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Split Leap">Split Leap</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Power Jump">Power Jump</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Cartwheel">Cartwheel</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Roundoff">Roundoff</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Back Walkover">Back Walkover</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Front Walkover">Front Walkover</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Kip-up">Kip-up</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Tuck Jump">Tuck Jump</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Butterfly Kick">Butterfly Kick</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Needle">Needle</button>
+                </div>
+
+                <!-- Jazz Moves -->
+                <div class="category-section hidden" data-category="jazz">
+                    <h3 class="text-lg font-semibold text-purple-800 mb-2 col-span-2">Jazz Moves</h3>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Jazz Pirouette">Jazz Pirouette</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Chasse">Chasse</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Jazz Split">Jazz Split</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Piqué Turn">Piqué Turn</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Fan Kick">Fan Kick</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Jazz Walk">Jazz Walk</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Parallel Turn">Parallel Turn</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Pas de Bourrée">Pas de Bourrée</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Grand Jeté">Grand Jeté</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Développé">Développé</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Isolation">Isolation</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Ball Change">Ball Change</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Heel Stretch">Heel Stretch</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Pencil Turn">Pencil Turn</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Tendu">Tendu</button>
+                </div>
+
+                <!-- Contemporary Moves -->
+                <div class="category-section hidden" data-category="contemporary">
+                    <h3 class="text-lg font-semibold text-purple-800 mb-2 col-span-2">Contemporary Moves</h3>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Floor Work">Floor Work</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Isolation">Isolation</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Contract and Release">Contract and Release</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Plié">Plié</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Pivot Turn">Pivot Turn</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Choreographic Phrase">Choreographic Phrase</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Lunge">Lunge</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Leaping Fish">Leaping Fish</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Arabesque">Arabesque</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Extension">Extension</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Parallel Stretch">Parallel Stretch</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Roll-Down">Roll-Down</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Attitude Turn">Attitude Turn</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Side Leap">Side Leap</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Crossover">Crossover</button>
+                </div>
+
+                <!-- Hip-Hop Moves -->
+                <div class="category-section hidden" data-category="hiphop">
+                    <h3 class="text-lg font-semibold text-purple-800 mb-2 col-span-2">Hip-Hop Moves</h3>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Popping">Popping</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Locking">Locking</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Breaking (B-Boying)">Breaking (B-Boying)</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Krumping">Krumping</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Tutting">Tutting</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Waacking">Waacking</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Running Man">Running Man</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Cabbage Patch">Cabbage Patch</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Moonwalk">Moonwalk</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Dougie">Dougie</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Stanky Legg">Stanky Legg</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="The Robot">The Robot</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Reebok">Reebok</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Lean Back">Lean Back</button>
+                    <button class="py-2 px-4 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-lg transition duration-200 text-sm move-btn" data-move="Hip-Hop Bounce">Hip-Hop Bounce</button>
+                </div>
+            </div>
             
             <div id="custom-move-input" class="hidden flex flex-col space-y-3 mt-4">
                 <input
@@ -243,6 +385,11 @@
                 });
             });
             
+            // Auto-detect button
+            document.getElementById('auto-detect-btn').addEventListener('click', function() {
+                selectMove('auto-detect');
+            });
+            
             // Custom move buttons
             customMoveBtn.addEventListener('click', () => {
                 customMoveInput.classList.remove('hidden');
@@ -285,6 +432,45 @@
             
             // Error screen button
             tryAgainBtn.addEventListener('click', showMoveSelection);
+
+            // Category navigation
+            const categoryButtons = document.querySelectorAll('.category-btn');
+            const categorySections = document.querySelectorAll('.category-section');
+            
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const category = this.getAttribute('data-category');
+                    
+                    // Update button styles
+                    categoryButtons.forEach(btn => {
+                        if (btn.getAttribute('data-category') === category) {
+                            btn.classList.remove('bg-purple-100', 'text-purple-800');
+                            btn.classList.add('bg-purple-600', 'text-white');
+                        } else {
+                            btn.classList.remove('bg-purple-600', 'text-white');
+                            btn.classList.add('bg-purple-100', 'text-purple-800');
+                        }
+                    });
+                    
+                    // Show/hide category sections
+                    if (category === 'all') {
+                        categorySections.forEach(section => {
+                            section.classList.remove('hidden');
+                        });
+                    } else {
+                        categorySections.forEach(section => {
+                            if (section.getAttribute('data-category') === category) {
+                                section.classList.remove('hidden');
+                            } else {
+                                section.classList.add('hidden');
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Show all moves by default
+            document.querySelector('.category-btn[data-category="all"]').click();
         });
         
         // Functions
@@ -432,35 +618,41 @@
             }
         }
         
-        function analyzeVideo(videoBlob) {
-            const formData = new FormData();
-            formData.append('video', videoBlob);
-            formData.append('dance_move_type', selectedMove);
-            
-            statusMessage.textContent = 'Analyzing your dance move...';
-            
-            fetch('/analyze', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Server error: ' + response.statusText);
+        async function analyzeVideo(videoBlob) {
+            try {
+                const formData = new FormData();
+                formData.append('video', videoBlob);
+                
+                if (selectedMove !== 'auto-detect') {
+                    formData.append('dance_move_type', selectedMove);
                 }
-                return response.json();
-            })
-            .then(data => {
+                
+                const response = await fetch(selectedMove === 'auto-detect' ? '/detect' : '/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to analyze video');
+                }
+                
+                const data = await response.json();
+                
                 if (data.error) {
                     throw new Error(data.error);
                 }
                 
+                if (selectedMove === 'auto-detect') {
+                    selectedMove = data.detected_move;
+                    selectedMoveDisplay.textContent = data.detected_move;
+                }
+                
                 // Display feedback
                 showFeedback(data.analysis);
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Error analyzing video:', error);
                 showError('Failed to analyze your dance. Please try again.');
-            });
+            }
         }
         
         function showFeedback(analysis) {

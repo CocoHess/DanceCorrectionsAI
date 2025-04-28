@@ -66,6 +66,32 @@ DanceCorrect AI is a web application that helps dancers improve their technical 
 5. Review the detailed feedback and suggestions for improvement
 6. Record a new dance move to continue practicing
 
+## Deployment on Render.com
+
+### Method 1: Using the Dashboard
+
+1. Create an account on [Render.com](https://render.com)
+2. Click "New +" and select "Web Service"
+3. Connect your GitHub repository or use the public repository URL
+4. Configure your web service:
+   - Name: `dancecorrect-ai` (or your preferred name)
+   - Environment: `Python`
+   - Build Command: `pip install -r requirements.txt`
+   - Start Command: `gunicorn app:app`
+5. Under "Advanced" add your environment variable:
+   - `OPENAI_API_KEY`: your OpenAI API key
+6. Click "Create Web Service"
+
+### Method 2: Using render.yaml (Infrastructure as Code)
+
+1. The repository includes a `render.yaml` file for easy deployment
+2. Create an account on [Render.com](https://render.com)
+3. Click "New +" and select "Blueprint"
+4. Connect your GitHub repository 
+5. Render will automatically detect the `render.yaml` file
+6. Set your environment variables when prompted
+7. Click "Apply"
+
 ## Privacy Information
 
 - All video processing is done on your device

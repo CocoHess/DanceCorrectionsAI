@@ -40,5 +40,10 @@ if [ ! -f ".env" ]; then
 fi
 
 # Run the application
-echo "Starting the DanceCorrect AI application..."
-python app.py 
+if [ "$1" == "prod" ]; then
+    echo "Starting the DanceCorrect AI application in production mode..."
+    gunicorn app:app
+else
+    echo "Starting the DanceCorrect AI application in development mode..."
+    python app.py 
+fi 

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select Dance Move</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .move-card {
+            margin: 15px 0;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: white;
+            transition: all 0.3s ease;
+        }
+        .move-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .move-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .move-description {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .move-difficulty {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            color: white;
+        }
+        .difficulty-beginner { background-color: #4caf50; }
+        .difficulty-intermediate { background-color: #ff9800; }
+        .difficulty-advanced { background-color: #f44336; }
+        .back-button {
+            margin-bottom: 20px;
+            padding: 8px 16px;
+            background-color: #666;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="window.location.href='/'">← Back to Dance Styles</button>
+    <h1>Select a {{ dance_style|title }} Move</h1>
+    
+    <div id="moveList">
+        {% for move in moves %}
+        <div class="move-card" onclick="selectMove('{{ move.id }}')">
+            <div class="move-title">{{ move.name }}</div>
+            <div class="move-description">{{ move.description }}</div>
+            <div class="move-difficulty difficulty-{{ move.difficulty }}">
+                {{ move.difficulty|title }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        function selectMove(moveId) {
+            window.location.href = `/record/${moveId}`;
+        }
+    </script>
+</body>
+</html> 

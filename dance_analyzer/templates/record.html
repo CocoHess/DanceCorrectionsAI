@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Record Dance Move</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .back-button {
+            margin-bottom: 20px;
+            padding: 8px 16px;
+            background-color: #666;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .option-card {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .option-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .option-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .option-description {
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .video-container {
+            width: 100%;
+            max-width: 640px;
+            margin: 20px auto;
+            display: none;
+        }
+        .video-container.active {
+            display: block;
+        }
+        #videoPreview {
+            width: 100%;
+            border-radius: 8px;
+        }
+        .controls {
+            margin-top: 10px;
+            text-align: center;
+        }
+        .button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .record-button {
+            background-color: #f44336;
+            color: white;
+        }
+        .stop-button {
+            background-color: #666;
+            color: white;
+        }
+        .upload-button {
+            background-color: #2196f3;
+            color: white;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="window.location.href='/moves/{{ dance_style }}'">← Back to Moves</button>
+    
+    <div class="container">
+        <h1>Record {{ move.name }}</h1>
+        <p>{{ move.description }}</p>
+        
+        <div class="option-card" onclick="showCamera()">
+            <div class="option-title">Record with Camera</div>
+            <div class="option-description">Record your dance move directly using your device's camera</div>
+        </div>
+        
+        <div class="option-card" onclick="showUpload()">
+            <div class="option-title">Upload Video</div>
+            <div class="option-description">Upload a pre-recorded video of your dance move</div>
+        </div>
+
+        <div id="cameraContainer" class="video-container">
+            <video id="videoPreview" autoplay playsinline></video>
+            <div class="controls">
+                <button id="recordButton" class="button record-button">Start Recording</button>
+                <button id="stopButton" class="button stop-button hidden">Stop Recording</button>
+            </div>
+        </div>
+
+        <div id="uploadContainer" class="video-container">
+            <form id="uploadForm" enctype="multipart/form-data">
+                <input type="file" name="video" accept="video/*" required>
+                <button type="submit" class="button upload-button">Upload Video</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let mediaRecorder;
+        let recordedChunks = [];
+        const videoPreview = document.getElementById('videoPreview');
+        const recordButton = document.getElementById('recordButton');
+        const stopButton = document.getElementById('stopButton');
+        const uploadForm = document.getElementById('uploadForm');
+
+        function showCamera() {
+            document.getElementById('cameraContainer').classList.add('active');
+            document.getElementById('uploadContainer').classList.remove('active');
+            startCamera();
+        }
+
+        function showUpload() {
+            document.getElementById('cameraContainer').classList.remove('active');
+            document.getElementById('uploadContainer').classList.add('active');
+            stopCamera();
+        }
+
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                videoPreview.srcObject = stream;
+                mediaRecorder = new MediaRecorder(stream);
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        recordedChunks.push(event.data);
+                    }
+                };
+
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                    const formData = new FormData();
+                    formData.append('video', blob, 'recording.webm');
+                    formData.append('move_id', '{{ move.id }}');
+                    
+                    fetch('/analyze', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            alert(data.error);
+                        } else {
+                            window.location.href = `/results/${data.task_id}`;
+                        }
+                    })
+                    .catch(error => {
+                        alert('Error: ' + error.message);
+                    });
+                };
+            } catch (error) {
+                alert('Error accessing camera: ' + error.message);
+            }
+        }
+
+        function stopCamera() {
+            const stream = videoPreview.srcObject;
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                videoPreview.srcObject = null;
+            }
+        }
+
+        recordButton.onclick = () => {
+            recordedChunks = [];
+            mediaRecorder.start();
+            recordButton.classList.add('hidden');
+            stopButton.classList.remove('hidden');
+        };
+
+        stopButton.onclick = () => {
+            mediaRecorder.stop();
+            recordButton.classList.remove('hidden');
+            stopButton.classList.add('hidden');
+        };
+
+        uploadForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(uploadForm);
+            formData.append('move_id', '{{ move.id }}');
+            
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    window.location.href = `/results/${data.task_id}`;
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        };
+    </script>
+</body>
+</html> 

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dance Analyzer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .dance-style {
+            margin: 15px 0;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: white;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        .dance-style:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .dance-style.selected {
+            background-color: #e3f2fd;
+            border-color: #2196f3;
+        }
+        .dance-icon {
+            font-size: 2em;
+            margin-right: 15px;
+        }
+        .dance-info {
+            flex-grow: 1;
+        }
+        .dance-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .dance-description {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .next-button {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .next-button.visible {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Select Dance Style</h1>
+    
+    <div id="danceStyles">
+        <div class="dance-style" data-style="hiphop">
+            <div class="dance-icon">💃</div>
+            <div class="dance-info">
+                <div class="dance-title">Hip Hop</div>
+                <div class="dance-description">Street dance style with rhythm, body isolation, and freestyle movements</div>
+            </div>
+        </div>
+        <div class="dance-style" data-style="ballet">
+            <div class="dance-icon">🩰</div>
+            <div class="dance-info">
+                <div class="dance-title">Ballet</div>
+                <div class="dance-description">Classical dance form emphasizing grace, precision, and technical skill</div>
+            </div>
+        </div>
+        <div class="dance-style" data-style="contemporary">
+            <div class="dance-icon">🎭</div>
+            <div class="dance-info">
+                <div class="dance-title">Contemporary</div>
+                <div class="dance-description">Modern dance combining elements of ballet, jazz, and lyrical</div>
+            </div>
+        </div>
+        <div class="dance-style" data-style="jazz">
+            <div class="dance-icon">🎵</div>
+            <div class="dance-info">
+                <div class="dance-title">Jazz</div>
+                <div class="dance-description">Energetic dance style with sharp movements and syncopated rhythms</div>
+            </div>
+        </div>
+        <div class="dance-style" data-style="ballroom">
+            <div class="dance-icon">💑</div>
+            <div class="dance-info">
+                <div class="dance-title">Ballroom</div>
+                <div class="dance-description">Partner dances including waltz, tango, and foxtrot</div>
+            </div>
+        </div>
+        <div class="dance-style" data-style="breakdance">
+            <div class="dance-icon">🤸</div>
+            <div class="dance-info">
+                <div class="dance-title">Breakdance</div>
+                <div class="dance-description">Street dance with acrobatic moves, power moves, and footwork</div>
+            </div>
+        </div>
+    </div>
+
+    <button id="nextButton" class="next-button" onclick="goToMoves()">View Dance Moves</button>
+
+    <script>
+        let selectedDanceStyle = null;
+        const danceStyles = document.querySelectorAll('.dance-style');
+        const nextButton = document.getElementById('nextButton');
+        
+        danceStyles.forEach(style => {
+            style.addEventListener('click', () => {
+                danceStyles.forEach(s => s.classList.remove('selected'));
+                style.classList.add('selected');
+                selectedDanceStyle = style.dataset.style;
+                nextButton.classList.add('visible');
+            });
+        });
+
+        function goToMoves() {
+            if (selectedDanceStyle) {
+                window.location.href = `/moves/${selectedDanceStyle}`;
+            }
+        }
+    </script>
+</body>
+</html> 
